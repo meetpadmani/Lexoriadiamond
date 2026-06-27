@@ -25,3 +25,6 @@ Thumbs.db
 ppt-gen/node_modules
 whatsapp-server/.wwebjs_auth
 whatsapp-server/node_modules
+
+php.ini
+php.ini.bak
