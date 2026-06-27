@@ -85,21 +85,25 @@
     <!-- Charts Row -->
     <div class="row g-3 mb-4">
         <div class="col-lg-7">
-            <div class="crm-card" style="height:100%;">
+            <div class="crm-card">
                 <div class="crm-card-header">
                     <h5><i class="bi bi-graph-up me-2" style="color:var(--crm-primary);"></i>Revenue Overview</h5>
                     <span class="crm-badge primary">Last 6 Months</span>
                 </div>
-                <canvas id="revenueChart" height="260"></canvas>
+                <div style="position:relative; height:240px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
             </div>
         </div>
         <div class="col-lg-5">
-            <div class="crm-card" style="height:100%;">
+            <div class="crm-card">
                 <div class="crm-card-header">
                     <h5><i class="bi bi-funnel me-2" style="color:var(--crm-gold);"></i>Lead Trend</h5>
                     <span class="crm-badge gold">Last 6 Months</span>
                 </div>
-                <canvas id="leadChart" height="260"></canvas>
+                <div style="position:relative; height:240px;">
+                    <canvas id="leadChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -143,9 +147,9 @@
 <script>
     // Revenue Chart
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    const gradient = revenueCtx.createLinearGradient(0, 0, 0, 260);
-    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
-    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+    const gradient = revenueCtx.createLinearGradient(0, 0, 0, 240);
+    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.15)');
+    gradient.addColorStop(1, 'rgba(99, 102, 241, 0.01)');
 
     new Chart(revenueCtx, {
         type: 'line',
@@ -156,11 +160,11 @@
                 data: {!! json_encode($revenueChartData) !!},
                 borderColor: '#6366f1',
                 backgroundColor: gradient,
-                borderWidth: 2,
+                borderWidth: 2.5,
                 fill: true,
                 tension: 0.4,
                 pointBackgroundColor: '#6366f1',
-                pointBorderColor: '#1a1d27',
+                pointBorderColor: '#fff',
                 pointBorderWidth: 2,
                 pointRadius: 4,
                 pointHoverRadius: 6,
@@ -172,31 +176,34 @@
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#1a1d27',
-                    borderColor: '#2d3148',
+                    backgroundColor: '#fff',
+                    borderColor: '#e2e8f0',
                     borderWidth: 1,
-                    titleColor: '#e2e8f0',
-                    bodyColor: '#94a3b8',
+                    titleColor: '#0f172a',
+                    bodyColor: '#64748b',
                     padding: 12,
-                    cornerRadius: 8,
+                    cornerRadius: 10,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                     callbacks: {
                         label: function(context) {
-                            return '₹' + context.parsed.y.toLocaleString();
+                            return ' ₹' + context.parsed.y.toLocaleString();
                         }
                     }
                 }
             },
             scales: {
                 x: {
-                    grid: { color: 'rgba(45, 49, 72, 0.3)', drawBorder: false },
-                    ticks: { color: '#64748b', font: { size: 11 } }
+                    grid: { color: '#f1f5f9', drawBorder: false },
+                    ticks: { color: '#94a3b8', font: { size: 11 } },
+                    border: { display: false }
                 },
                 y: {
-                    grid: { color: 'rgba(45, 49, 72, 0.3)', drawBorder: false },
+                    grid: { color: '#f1f5f9', drawBorder: false },
                     ticks: {
-                        color: '#64748b', font: { size: 11 },
+                        color: '#94a3b8', font: { size: 11 },
                         callback: function(value) { return '₹' + (value/1000) + 'K'; }
-                    }
+                    },
+                    border: { display: false }
                 }
             }
         }
@@ -204,9 +211,6 @@
 
     // Lead Chart
     const leadCtx = document.getElementById('leadChart').getContext('2d');
-    const leadGradient = leadCtx.createLinearGradient(0, 0, 0, 260);
-    leadGradient.addColorStop(0, 'rgba(197, 160, 89, 0.2)');
-    leadGradient.addColorStop(1, 'rgba(197, 160, 89, 0)');
 
     new Chart(leadCtx, {
         type: 'bar',
@@ -215,11 +219,12 @@
             datasets: [{
                 label: 'Leads',
                 data: {!! json_encode($leadChartData) !!},
-                backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                backgroundColor: 'rgba(99, 102, 241, 0.15)',
                 borderColor: '#6366f1',
-                borderWidth: 1,
-                borderRadius: 6,
-                maxBarThickness: 32,
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+                maxBarThickness: 36,
             }]
         },
         options: {
@@ -228,23 +233,25 @@
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#1a1d27',
-                    borderColor: '#2d3148',
+                    backgroundColor: '#fff',
+                    borderColor: '#e2e8f0',
                     borderWidth: 1,
-                    titleColor: '#e2e8f0',
-                    bodyColor: '#94a3b8',
+                    titleColor: '#0f172a',
+                    bodyColor: '#64748b',
                     padding: 12,
-                    cornerRadius: 8,
+                    cornerRadius: 10,
                 }
             },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#64748b', font: { size: 11 } }
+                    ticks: { color: '#94a3b8', font: { size: 11 } },
+                    border: { display: false }
                 },
                 y: {
-                    grid: { color: 'rgba(45, 49, 72, 0.3)', drawBorder: false },
-                    ticks: { color: '#64748b', font: { size: 11 }, stepSize: 1 }
+                    grid: { color: '#f1f5f9', drawBorder: false },
+                    ticks: { color: '#94a3b8', font: { size: 11 }, stepSize: 1 },
+                    border: { display: false }
                 }
             }
         }
