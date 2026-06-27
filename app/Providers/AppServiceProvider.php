@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        if (!app()->runningInConsole()) {
+            if (\Illuminate\Support\Facades\Schema::hasTable('typography_settings')) {
+                $typography = \App\Models\TypographySetting::first();
+                \Illuminate\Support\Facades\View::share('typography', $typography);
+            }
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('system_settings')) {
+                $settings = \App\Models\SystemSetting::all()->pluck('value', 'key');
+                \Illuminate\Support\Facades\View::share('settings', $settings);
+            }
+        }
+    }
+}

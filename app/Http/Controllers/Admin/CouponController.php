@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Coupon;
+use Illuminate\Http\Request;
+
+class CouponController extends Controller
+{
+    public function index()
+    {
+        $coupons = Coupon::orderBy('created_at', 'desc')->paginate(20);
+        return view('admin.coupons.index', compact('coupons'));
+    }
+
+    public function create()
+    {
+        return view('admin.coupons.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|unique:coupons,code|max:50',
+            'type' => 'required|in:percentage,fixed',
+            'value' => 'required|numeric|min:0',
+            'min_purchase_amount' => 'nullable|numeric|min:0',
+            'usage_limit' => 'nullable|integer|min:1|max:2147483647',
+            'expiry_date' => 'nullable|date|after_or_equal:today',
+        ]);
+
+        $data = $request->all();
+        $data['is_one_time'] = $request->has('is_one_time');
+
+        Coupon::create($data);
+
+        return redirect()->route('admin.coupons.index')->with('success', 'Coupon created successfully.');
+    }
+
+    public function edit(Coupon $coupon)
+    {
+        return view('admin.coupons.edit', compact('coupon'));
+    }
+
+    public function update(Request $request, Coupon $coupon)
+    {
+        $request->validate([
+            'code' => 'required|string|unique:coupons,code,' . $coupon->id . '|max:50',
+            'type' => 'required|in:percentage,fixed',
+            'value' => 'required|numeric|min:0',
+            'min_purchase_amount' => 'nullable|numeric|min:0',
+            'usage_limit' => 'nullable|integer|min:1|max:2147483647',
+            'expiry_date' => 'nullable|date|after_or_equal:today',
+        ]);
+
+        $data = $request->all();
+        $data['is_one_time'] = $request->has('is_one_time');
+
+        $coupon->update($data);
+
+        return redirect()->route('admin.coupons.index')->with('success', 'Coupon updated successfully.');
+    }
+
+    public function destroy(Coupon $coupon)
+    {
+        $coupon->delete();
+        return redirect()->route('admin.coupons.index')->with('success', 'Coupon deleted successfully.');
+    }
+
+    public function toggleStatus(Coupon $coupon)
+    {
+        $coupon->is_active = !$coupon->is_active;
+        $coupon->save();
+        return back()->with('success', 'Coupon status updated.');
+    }
+}
